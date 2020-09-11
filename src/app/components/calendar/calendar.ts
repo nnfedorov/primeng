@@ -195,6 +195,9 @@ export interface LocaleSettings {
     styleUrls: ['./calendar.css']
 })
 export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
+
+    @Input() externalMonthsCreation?: boolean;
+
     
     @Input() defaultDate: Date;
     
@@ -603,7 +606,10 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
         }
     }
 
-    createMonths(month: number, year: number) {
+    createMonths(month: number, year: number, isExternalCall?: boolean) {
+        if (this.externalMonthsCreation && !isExternalCall) {
+            return;
+        }
         this.months = this.months = [];
         for (let i = 0 ; i < this.numberOfMonths; i++) {
             let m = month + i;
