@@ -27,6 +27,17 @@ export interface LocaleSettings {
     weekHeader?: string;
 }
 
+export interface DateMeta {
+    day: number;
+    month: number;
+    selectable?: boolean;
+    otherMonth?: boolean;
+    today?: boolean;
+    year: number;
+    weekDay?: number;
+    dateHash?: string;
+}
+
 @Component({
     selector: 'p-calendar',
     template:  `
@@ -40,8 +51,8 @@ export interface LocaleSettings {
             </ng-template>
             <div #contentWrapper [class]="panelStyleClass" [ngStyle]="panelStyle" [ngClass]="{'p-datepicker p-component': true, 'p-datepicker-inline':inline,
                 'p-disabled':disabled,'p-datepicker-timeonly':timeOnly,'p-datepicker-multiple-month': this.numberOfMonths > 1, 'p-datepicker-monthpicker': (view === 'month'), 'p-datepicker-touch-ui': touchUI}"
-                [@overlayAnimation]="touchUI ? {value: 'visibleTouchUI', params: {showTransitionParams: showTransitionOptions, hideTransitionParams: hideTransitionOptions}}: 
-                                            {value: 'visible', params: {showTransitionParams: showTransitionOptions, hideTransitionParams: hideTransitionOptions}}" 
+                [@overlayAnimation]="touchUI ? {value: 'visibleTouchUI', params: {showTransitionParams: showTransitionOptions, hideTransitionParams: hideTransitionOptions}}:
+                                            {value: 'visible', params: {showTransitionParams: showTransitionOptions, hideTransitionParams: hideTransitionOptions}}"
                                             [@.disabled]="inline === true" (@overlayAnimation.start)="onOverlayAnimationStart($event)" (@overlayAnimation.done)="onOverlayAnimationDone($event)" *ngIf="inline || overlayVisible">
                 <ng-content select="p-header"></ng-content>
                 <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
@@ -87,8 +98,10 @@ export interface LocaleSettings {
                                             </td>
                                             <td *ngFor="let date of week" [ngClass]="{'p-datepicker-other-month': date.otherMonth,'p-datepicker-today':date.today}">
                                                 <ng-container *ngIf="date.otherMonth ? showOtherMonths : true">
-                                                    <span [ngClass]="{'p-highlight':isSelected(date), 'p-disabled': !date.selectable}"
-                                                        (click)="onDateSelect($event,date)" draggable="false" (keydown)="onDateCellKeydown($event,date,i)" pRipple>
+                                                    <span [class.p-highlight]="isSelected(date)" [class.p-disabled]="!date.selectable"
+                                                          [ngClass]="getDateClassFn && getDateClassFn(date)"
+                                                          (click)="onDateSelect($event,date)" draggable="false"
+                                                          (keydown)="onDateCellKeydown($event,date,i)" pRipple>
                                                         <ng-container *ngIf="!dateTemplate">{{date.day}}</ng-container>
                                                         <ng-container *ngTemplateOutlet="dateTemplate; context: {$implicit: date}"></ng-container>
                                                     </span>
@@ -197,6 +210,8 @@ export interface LocaleSettings {
 export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
 
     @Input() externalMonthsCreation?: boolean;
+    @Input() onDateSelectFn?: (event: MouseEvent, dateMeta: DateMeta) => void;
+    @Input() getDateClassFn?: (dateMeta: DateMeta) => string;
 
     @Input() defaultDate: Date;
 
@@ -643,18 +658,21 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
 
         for (let i = 0; i < monthRows; i++) {
             let week = [];
+            let weekDay = 0;
 
             if (i == 0) {
                 for (let j = (prevMonthDaysLength - firstDay + 1); j <= prevMonthDaysLength; j++) {
                     let prev = this.getPreviousMonthAndYear(month, year);
                     week.push({day: j, month: prev.month, year: prev.year, otherMonth: true,
-                            today: this.isToday(today, j, prev.month, prev.year), selectable: this.isSelectable(j, prev.month, prev.year, true)});
+                            today: this.isToday(today, j, prev.month, prev.year), selectable: this.isSelectable(j, prev.month, prev.year, true),
+                            weekDay: weekDay++, dateHash: `${prev.year}.${prev.month}.${j}`});
                 }
 
                 let remainingDaysLength = 7 - week.length;
                 for (let j = 0; j < remainingDaysLength; j++) {
                     week.push({day: dayNo, month: month, year: year, today: this.isToday(today, dayNo, month, year),
-                            selectable: this.isSelectable(dayNo, month, year, false)});
+                            selectable: this.isSelectable(dayNo, month, year, false),
+                            weekDay: weekDay++, dateHash: `${year}.${month}.${dayNo}`});
                     dayNo++;
                 }
             }
@@ -664,11 +682,13 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
                         let next = this.getNextMonthAndYear(month, year);
                         week.push({day: dayNo - daysLength, month: next.month, year: next.year, otherMonth: true,
                                     today: this.isToday(today, dayNo - daysLength, next.month, next.year),
-                                    selectable: this.isSelectable((dayNo - daysLength), next.month, next.year, true)});
+                                    selectable: this.isSelectable((dayNo - daysLength), next.month, next.year, true),
+                                    weekDay: weekDay++, dateHash: `${next.year}.${next.month}.${dayNo - daysLength}`});
                     }
                     else {
                         week.push({day: dayNo, month: month, year: year, today: this.isToday(today, dayNo, month, year),
-                            selectable: this.isSelectable(dayNo, month, year, false)});
+                            selectable: this.isSelectable(dayNo, month, year, false),
+                            weekDay: weekDay++, dateHash: `${year}.${month}.${dayNo}`});
                     }
 
                     dayNo++;
@@ -786,6 +806,11 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
     onDateSelect(event, dateMeta) {
         if (this.disabled || !dateMeta.selectable) {
             event.preventDefault();
+            return;
+        }
+
+        if (this.onDateSelectFn) { // custom select handler
+            this.onDateSelectFn(event, dateMeta);
             return;
         }
 
