@@ -91,8 +91,9 @@ import { HomeComponent } from './components/home/home.component';
             {path: 'tree', loadChildren: () => import('./components/tree/treedemo.module').then(m => m.TreeDemoModule)},
             {path: 'treetable', loadChildren: () => import('./components/treetable/treetabledemo.module').then(m => m.TreeTableDemoModule)},
             {path: 'tristatecheckbox', loadChildren: () => import('./components/tristatecheckbox/tristatecheckboxdemo.module').then(m => m.TriStateCheckboxDemoModule)},
-            {path: 'virtualscroller', loadChildren: () => import('./components/virtualscroller/virtualscrollerdemo.module').then(m => m.VirtualScrollerDemoModule)}
-        ], {scrollPositionRestoration: 'enabled'})    
+            {path: 'virtualscroller', loadChildren: () => import('./components/virtualscroller/virtualscrollerdemo.module').then(m => m.VirtualScrollerDemoModule)},
+            {path: 'm2', loadChildren: () => import('./components/m2/m2.module').then(m => m.M2Module)}
+        ], {scrollPositionRestoration: 'enabled'})
     ],
     exports: [RouterModule]
 })

@@ -11,6 +11,7 @@ declare let gtag: Function;
             <div class="layout-menu">
                 <div class="menu-category">General</div>
                 <div class="menu-items">
+                    <a [routerLink]=" ['/m2']" routerLinkActive="router-link-exact-active">M2</a>
                     <a [routerLink]=" ['/setup']" routerLinkActive="router-link-exact-active">Get Started</a>
                     <a href="https://forum.primefaces.org/viewforum.php?f=35" target="_blank">Community Forum</a>
                     <a [routerLink]=" ['/lts']" routerLinkActive="router-link-exact-active">LTS</a>
@@ -252,7 +253,7 @@ declare let gtag: Function;
                 <div class="menu-items">
                     <a [routerLink]=" ['/dragdrop']" routerLinkActive="router-link-exact-active">Drag&amp;Drop</a>
                 </div>
-                
+
                 <div class="menu-category">Misc</div>
                 <div class="menu-items">
                     <a [routerLink]=" ['/blockui']" routerLinkActive="router-link-exact-active">BlockUI</a>
