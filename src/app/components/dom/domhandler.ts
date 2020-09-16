@@ -116,7 +116,7 @@ export class DomHandler {
         }
         else if ((targetOffset.left + elementDimensions.width) > viewport.width) {
             // element wider then viewport but can be fit on screen (align at right side of viewport)
-            left = (targetOffset.left + elementDimensions.width - viewport.width) * -1;
+            left = (targetOffset.left + elementDimensions.width - viewport.width + 17 /* scrollbar width */) * -1;
         }
         else {
             // element fits on screen (align with target)
