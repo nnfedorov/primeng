@@ -187,6 +187,8 @@ export class Dialog implements AfterContentInit,OnDestroy {
 
     @Output() onDragEnd: EventEmitter<any> = new EventEmitter();
 
+    @Output() onShowAnimationEnd: EventEmitter<any> = new EventEmitter<void>(); // #20928
+
     headerTemplate: TemplateRef<any>;
 
     contentTemplate: TemplateRef<any>;
@@ -678,6 +680,9 @@ export class Dialog implements AfterContentInit,OnDestroy {
 
     onAnimationEnd(event: AnimationEvent) {
         switch(event.toState) {
+            case 'visible':
+                this.onShowAnimationEnd.emit();
+            break;
             case 'void':
                 this.onContainerDestroy();
                 this.onHide.emit({});
