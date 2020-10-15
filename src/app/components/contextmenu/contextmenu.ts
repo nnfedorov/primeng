@@ -2,7 +2,7 @@ import { NgModule,Component,ElementRef,AfterViewInit,OnDestroy,Input,Output,Rend
 import { CommonModule } from '@angular/common';
 import { DomHandler } from 'primeng/dom';
 import { MenuItem } from 'primeng/api';
-import { RippleModule } from 'primeng/ripple';  
+import { RippleModule } from 'primeng/ripple';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -114,11 +114,13 @@ export class ContextMenuSub {
         this.containerOffset = DomHandler.getOffset(item.parentElement)
         let viewport = DomHandler.getViewport();
         let sublistWidth = sublist.offsetParent ? sublist.offsetWidth : DomHandler.getHiddenElementOuterWidth(sublist);
-        let itemOuterWidth = DomHandler.getOuterWidth(item.children[0]);
-        let itemOuterHeight = DomHandler.getOuterHeight(item.children[0]);
+        const parentItem = item.children[0];
+        let itemOuterWidth = DomHandler.getOuterWidth(parentItem);
+        // let itemOuterHeight = DomHandler.getOuterHeight(parentItem);
         let sublistHeight = sublist.offsetHeight ? sublist.offsetHeight : DomHandler.getHiddenElementOuterHeight(sublist);
 
-        if ((parseInt(this.containerOffset.top) + itemOuterHeight + sublistHeight) > (viewport.height - DomHandler.calculateScrollbarHeight())) {
+        // if ((parseInt(this.containerOffset.top) + itemOuterHeight + sublistHeight) > (viewport.height - DomHandler.calculateScrollbarHeight())) {
+        if (parentItem.getBoundingClientRect().top + sublistHeight > viewport.height) {
             sublist.style.removeProperty('top');
             sublist.style.bottom = '0px';
         }
