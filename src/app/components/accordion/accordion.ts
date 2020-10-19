@@ -1,4 +1,4 @@
-import { NgModule, Component, ElementRef, AfterContentInit, OnDestroy, Input, Output, EventEmitter, 
+import { NgModule, Component, ElementRef, AfterContentInit, OnDestroy, Input, Output, EventEmitter,
     ContentChildren, QueryList, ChangeDetectorRef, Inject, forwardRef, TemplateRef, ViewRef, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
@@ -61,7 +61,7 @@ export class AccordionTab implements AfterContentInit,OnDestroy {
 
     @Output() selectedChange: EventEmitter<any> = new EventEmitter();
 
-    @Input() transitionOptions: string = '400ms cubic-bezier(0.86, 0, 0.07, 1)';
+    @Input() transitionOptions: string = '0ms';
 
     @ContentChildren(Header) headerFacet: QueryList<Header>;
 
@@ -75,7 +75,7 @@ export class AccordionTab implements AfterContentInit,OnDestroy {
 
     set selected(val: any) {
         this._selected = val;
-        
+
         if (!this.loaded) {
             this.changeDetector.detectChanges();
         }
@@ -105,7 +105,7 @@ export class AccordionTab implements AfterContentInit,OnDestroy {
                 case 'header':
                     this.headerTemplate = item.template;
                 break;
-                
+
                 default:
                     this.contentTemplate = item.template;
                 break;
@@ -184,15 +184,15 @@ export class AccordionTab implements AfterContentInit,OnDestroy {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Accordion implements BlockableUI, AfterContentInit, OnDestroy {
-    
+
     @Input() multiple: boolean;
-    
+
     @Output() onClose: EventEmitter<any> = new EventEmitter();
 
     @Output() onOpen: EventEmitter<any> = new EventEmitter();
 
     @Input() style: any;
-    
+
     @Input() styleClass: string;
 
     @Input() expandIcon: string = 'pi pi-fw pi-chevron-right';
@@ -200,15 +200,15 @@ export class Accordion implements BlockableUI, AfterContentInit, OnDestroy {
     @Input() collapseIcon: string = 'pi pi-fw pi-chevron-down';
 
     @Output() activeIndexChange: EventEmitter<any> = new EventEmitter();
-    
+
     @ContentChildren(AccordionTab) tabList: QueryList<AccordionTab>;
 
     tabListSubscription: Subscription;
-    
+
     private _activeIndex: any;
 
     preventActiveIndexPropagation: boolean;
-    
+
     public tabs: AccordionTab[] = [];
 
     constructor(public el: ElementRef, public changeDetector: ChangeDetectorRef) {}
@@ -226,11 +226,11 @@ export class Accordion implements BlockableUI, AfterContentInit, OnDestroy {
         this.tabs = this.tabList.toArray();
         this.updateSelectionState();
     }
-      
+
     getBlockableElement(): HTMLElement {
         return this.el.nativeElement.children[0];
-    } 
-    
+    }
+
     @Input() get activeIndex(): any {
         return this._activeIndex;
     }
