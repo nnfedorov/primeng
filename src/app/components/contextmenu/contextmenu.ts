@@ -291,12 +291,13 @@ export class ContextMenu implements AfterViewInit, OnDestroy {
             });
         }
 
-        this.zone.runOutsideAngular(() => {
-            if (!this.windowResizeListener) {
-                this.windowResizeListener = this.onWindowResize.bind(this);
-                window.addEventListener('resize', this.windowResizeListener);
-            }
-        });
+        // #21442
+        // this.zone.runOutsideAngular(() => {
+        //     if (!this.windowResizeListener) {
+        //         this.windowResizeListener = this.onWindowResize.bind(this);
+        //         window.addEventListener('resize', this.windowResizeListener);
+        //     }
+        // });
     }
 
     unbindGlobalListeners() {
