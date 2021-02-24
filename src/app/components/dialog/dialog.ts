@@ -340,7 +340,7 @@ export class Dialog implements AfterContentInit,OnDestroy {
         if (this.closable && this.dismissableMask) {
             this.maskClickListener = this.renderer.listen(this.wrapper, 'mousedown', (event: any) => {
                 if (this.wrapper && this.wrapper.isSameNode(event.target)) {
-                    this.close(event);
+                    setTimeout(() => this.close(event)); // timeout lets 'blur' event listeners be executed
                 }
             });
         }
