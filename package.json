@@ -1,6 +1,6 @@
 {
   "name": "primeng",
-  "version": "10.0.1-SNAPSHOT",
+  "version": "10.0.1-sdi",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -10,7 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build-lib": "ng build primeng-library && gulp build-assets"
+    "build-lib": "ng build primeng-library && gulp build-assets",
+    "pack-lib": "cd dist && npm pack"
   },
   "repository": {
     "type": "git",
