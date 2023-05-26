@@ -212,6 +212,7 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
     @Input() externalMonthsCreation?: boolean;
     @Input() onDateSelectFn?: (event: MouseEvent, dateMeta: DateMeta) => void;
     @Input() getDateClassFn?: (dateMeta: DateMeta) => string;
+    @Input() target?: HTMLElement;
 
     @Input() defaultDate: Date;
 
@@ -2080,9 +2081,9 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
         }
         else {
             if (this.appendTo)
-                DomHandler.absolutePosition(this.overlay, this.inputfieldViewChild.nativeElement);
+                DomHandler.absolutePosition(this.overlay, this.target || this.inputfieldViewChild.nativeElement);
             else
-                DomHandler.relativePosition(this.overlay, this.inputfieldViewChild.nativeElement);
+                DomHandler.relativePosition(this.overlay, this.target || this.inputfieldViewChild.nativeElement);
         }
     }
 
