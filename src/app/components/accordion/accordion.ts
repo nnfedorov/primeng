@@ -61,7 +61,7 @@ export class AccordionTab implements AfterContentInit,OnDestroy {
 
     @Output() selectedChange: EventEmitter<any> = new EventEmitter();
 
-    @Input() transitionOptions: string = '400ms cubic-bezier(0.86, 0, 0.07, 1)';
+    @Input() transitionOptions: string = '0ms';
 
     @ContentChildren(Header) headerFacet: QueryList<Header>;
 
