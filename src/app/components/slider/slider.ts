@@ -167,6 +167,8 @@ export class Slider implements OnDestroy, ControlValueAccessor {
      */
     @Output() onSlideEnd: EventEmitter<SliderSlideEndEvent> = new EventEmitter<SliderSlideEndEvent>();
 
+    @Output() barClick = new EventEmitter<Event>();
+
     @ViewChild('sliderHandle') sliderHandle: Nullable<ElementRef>;
 
     @ViewChild('sliderHandleStart') sliderHandleStart: Nullable<ElementRef>;
@@ -313,6 +315,7 @@ export class Slider implements OnDestroy, ControlValueAccessor {
         if (!this.sliderHandleClick) {
             this.updateDomData();
             this.handleChange(event);
+            this.barClick.emit(event);
         }
 
         this.sliderHandleClick = false;

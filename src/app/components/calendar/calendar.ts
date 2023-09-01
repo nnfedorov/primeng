@@ -42,6 +42,18 @@ export const CALENDAR_VALUE_ACCESSOR: any = {
     useExisting: forwardRef(() => Calendar),
     multi: true
 };
+
+export interface DateMeta {
+    day: number;
+    month: number;
+    selectable?: boolean;
+    otherMonth?: boolean;
+    today?: boolean;
+    year: number;
+    weekDay?: number;
+    dateHash?: string;
+}
+
 /**
  * Calendar also known as DatePicker, is a form component to work with dates.
  * @group Components
@@ -172,7 +184,7 @@ export const CALENDAR_VALUE_ACCESSOR: any = {
                                             </td>
                                             <td *ngFor="let date of week" [ngClass]="{ 'p-datepicker-other-month': date.otherMonth, 'p-datepicker-today': date.today }">
                                                 <ng-container *ngIf="date.otherMonth ? showOtherMonths : true">
-                                                    <span [ngClass]="{ 'p-highlight': isSelected(date), 'p-disabled': !date.selectable }" (click)="onDateSelect($event, date)" draggable="false" (keydown)="onDateCellKeydown($event, date, i)" pRipple>
+                                                    <span [class.p-highlight]="isSelected(date)" [class.p-disabled]="!date.selectable" (click)="onDateSelect($event, date)" draggable="false" (keydown)="onDateCellKeydown($event, date, i)" pRipple [ngClass]="getDateClassFn && getDateClassFn(date)">
                                                         <ng-container *ngIf="!dateTemplate">{{ date.day }}</ng-container>
                                                         <ng-container *ngTemplateOutlet="dateTemplate; context: { $implicit: date }"></ng-container>
                                                     </span>
@@ -377,6 +389,12 @@ export const CALENDAR_VALUE_ACCESSOR: any = {
     styleUrls: ['./calendar.css']
 })
 export class Calendar implements OnInit, OnDestroy, ControlValueAccessor {
+
+    @Input() externalMonthsCreation?: boolean;
+    @Input() onDateSelectFn?: (event: Event, dateMeta: DateMeta) => void;
+    @Input() getDateClassFn?: (dateMeta: DateMeta) => string;
+    @Input() target?: HTMLElement;
+    
     /**
      * Inline style of the component.
      * @group Props
@@ -1159,7 +1177,10 @@ export class Calendar implements OnInit, OnDestroy, ControlValueAccessor {
         return yearPickerValues;
     }
 
-    createMonths(month: number, year: number) {
+    createMonths(month: number, year: number, isExternalCall?: boolean) {
+        if (this.externalMonthsCreation && !isExternalCall) {
+            return;
+        }
         this.months = this.months = [];
         for (let i = 0; i < this.numberOfMonths; i++) {
             let m = month + i;
@@ -1194,16 +1215,19 @@ export class Calendar implements OnInit, OnDestroy, ControlValueAccessor {
 
         for (let i = 0; i < monthRows; i++) {
             let week = [];
-
+            let weekDay = 0;
+            
             if (i == 0) {
                 for (let j = prevMonthDaysLength - firstDay + 1; j <= prevMonthDaysLength; j++) {
                     let prev = this.getPreviousMonthAndYear(month, year);
-                    week.push({ day: j, month: prev.month, year: prev.year, otherMonth: true, today: this.isToday(today, j, prev.month, prev.year), selectable: this.isSelectable(j, prev.month, prev.year, true) });
+                    week.push({ day: j, month: prev.month, year: prev.year, otherMonth: true, today: this.isToday(today, j, prev.month, prev.year), selectable: this.isSelectable(j, prev.month, prev.year, true),
+                            weekDay: weekDay++, dateHash: `${prev.year}.${prev.month}.${j}`});
                 }
 
                 let remainingDaysLength = 7 - week.length;
                 for (let j = 0; j < remainingDaysLength; j++) {
-                    week.push({ day: dayNo, month: month, year: year, today: this.isToday(today, dayNo, month, year), selectable: this.isSelectable(dayNo, month, year, false) });
+                    week.push({ day: dayNo, month: month, year: year, today: this.isToday(today, dayNo, month, year), selectable: this.isSelectable(dayNo, month, year, false),
+                            weekDay: weekDay++, dateHash: `${year}.${month}.${dayNo}`});
                     dayNo++;
                 }
             } else {
@@ -1216,10 +1240,12 @@ export class Calendar implements OnInit, OnDestroy, ControlValueAccessor {
                             year: next.year,
                             otherMonth: true,
                             today: this.isToday(today, dayNo - daysLength, next.month, next.year),
-                            selectable: this.isSelectable(dayNo - daysLength, next.month, next.year, true)
+                            selectable: this.isSelectable(dayNo - daysLength, next.month, next.year, true),
+                            weekDay: weekDay++, dateHash: `${next.year}.${next.month}.${dayNo - daysLength}`
                         });
                     } else {
-                        week.push({ day: dayNo, month: month, year: year, today: this.isToday(today, dayNo, month, year), selectable: this.isSelectable(dayNo, month, year, false) });
+                        week.push({ day: dayNo, month: month, year: year, today: this.isToday(today, dayNo, month, year), selectable: this.isSelectable(dayNo, month, year, false),
+                                weekDay: weekDay++, dateHash: `${year}.${month}.${dayNo}`});
                     }
 
                     dayNo++;
@@ -1361,6 +1387,11 @@ export class Calendar implements OnInit, OnDestroy, ControlValueAccessor {
             return;
         }
 
+        if (this.onDateSelectFn) { // custom select handler
+            this.onDateSelectFn(event, dateMeta);
+            return;
+        }
+        
         if (this.isMultipleSelection() && this.isSelected(dateMeta)) {
             this.value = this.value.filter((date: Date, i: number) => {
                 return !this.isDateEquals(date, dateMeta);
@@ -2797,9 +2828,9 @@ export class Calendar implements OnInit, OnDestroy, ControlValueAccessor {
                     this.overlay.style.width = DomHandler.getOuterWidth(this.inputfieldViewChild?.nativeElement) + 'px';
                 }
 
-                DomHandler.absolutePosition(this.overlay, this.inputfieldViewChild?.nativeElement);
+                DomHandler.absolutePosition(this.overlay, this.target || this.inputfieldViewChild?.nativeElement);
             } else {
-                DomHandler.relativePosition(this.overlay, this.inputfieldViewChild?.nativeElement);
+                DomHandler.relativePosition(this.overlay, this.target || this.inputfieldViewChild?.nativeElement);
             }
         }
     }

@@ -1,6 +1,6 @@
 {
     "name": "primeng",
-    "version": "16.3.1",
+    "version": "16.3.1-sdi",
     "license": "SEE LICENSE IN LICENSE.md",
     "scripts": {
         "ng": "ng",
@@ -12,7 +12,8 @@
         "format": "prettier --write \"**/*.{js,ts,d.ts}\"",
         "format:check": "prettier --check \"**/*.{js,ts,d.ts}\"",
         "build:lib": "npm run build:check && npm run build:package",
-        "build:package": "BROWSERSLIST_ENV=library ng build primeng-library && gulp build-assets",
+        "build:package": "SET \"BROWSERSLIST_ENV=library\" && ng build primeng-library && gulp build-assets",
+        "pack-lib": "cd dist && npm pack",
         "build:check": "npm run format:check && npm run security:check",
         "security:check": "npm audit --production --audit-level high",
         "dev:ssr": "ng run primeng:serve-ssr",

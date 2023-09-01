@@ -166,7 +166,7 @@ export class AccordionTab implements AfterContentInit, OnDestroy {
      * Transition options of the animation.
      * @group Props
      */
-    @Input() transitionOptions: string = '400ms cubic-bezier(0.86, 0, 0.07, 1)';
+    @Input() transitionOptions: string = '0ms';
     /**
      * Position of the icon.
      * @group Props

@@ -319,7 +319,18 @@ export class ContextMenuSub {
         const sublistWidth = sublist.offsetParent ? sublist.offsetWidth : DomHandler.getHiddenElementOuterWidth(sublist);
         const itemOuterWidth = DomHandler.getOuterWidth(parentItem.children[0]);
 
-        sublist.style.top = '0px';
+        // sublist.style.top = '0px';
+
+        // fit top (SDI)
+        const topChild = parentItem.children[0];
+        const sublistHeight = sublist.offsetHeight ? sublist.offsetHeight : DomHandler.getHiddenElementOuterHeight(sublist);
+        if (topChild.getBoundingClientRect().top + sublistHeight > viewport.height) {
+            sublist.style.removeProperty('top');
+            sublist.style.bottom = '0px';
+        } else {
+            sublist.style.removeProperty('bottom');
+            sublist.style.top = '0px';
+        }
 
         if (parseInt(containerOffset.left, 10) + itemOuterWidth + sublistWidth > viewport.width - DomHandler.calculateScrollbarWidth()) {
             sublist.style.left = -1 * sublistWidth + 'px';

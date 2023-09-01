@@ -144,7 +144,12 @@ export class DomHandler {
             left = (targetOffset.left - relativeElementOffset.left) * -1;
         } else if (horizontalOverflow > 0) {
             // element wider then viewport but can be fit on screen (align at right side of viewport)
-            left = targetLeftOffsetInSpaceOfRelativeElement - horizontalOverflow;
+            // left = targetLeftOffsetInSpaceOfRelativeElement - horizontalOverflow;
+            const rightBorderByOverflow = this.getRightBorderByOverflow(target);
+            const rightBorder = rightBorderByOverflow > 0 ?
+                rightBorderByOverflow :
+                viewport.width - this.calculateScrollbarWidth();
+            left = (targetOffset.left + elementDimensions.width - /*viewport.width*/rightBorder) * -1;
         } else {
             // element fits on screen (align with target)
             left = targetOffset.left - relativeElementOffset.left;
@@ -152,6 +157,28 @@ export class DomHandler {
 
         element.style.top = top + 'px';
         element.style.left = left + 'px';
+    }
+
+    private static getRightBorderByOverflow(target: HTMLElement): number {
+        let parent: HTMLElement = target.parentElement;
+        while (parent != null) {
+            const parentStyle = window.getComputedStyle(parent);
+            if (parentStyle.overflowX !== 'visible') {
+                // find out whether the scrollbar is visible
+                const y1 = parent.scrollTop;
+                parent.scrollTop += 1;
+                const y2 = parent.scrollTop;
+                parent.scrollTop -= 1;
+                const y3 = parent.scrollTop;
+                parent.scrollTop = y1;
+                const isScrollbarVisible = y1 !== y2 || y2 !== y3;
+
+                return parent.getBoundingClientRect().right - (isScrollbarVisible ? this.calculateScrollbarWidth() : 0);
+            }
+            parent = parent.parentElement;
+        }
+
+        return -1; // parent with overflow not found
     }
 
     public static absolutePosition(element: any, target: any): void {

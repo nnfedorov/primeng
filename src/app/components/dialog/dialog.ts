@@ -430,6 +430,8 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
      */
     @Output() onMaximize: EventEmitter<any> = new EventEmitter<any>();
 
+    @Output() onShowAnimationEnd: EventEmitter<any> = new EventEmitter<void>(); // #20928
+
     @ContentChild(Header) headerFacet: QueryList<Header> | undefined;
 
     @ContentChild(Footer) footerFacet: QueryList<Footer> | undefined;
@@ -576,7 +578,7 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
         if (this.closable && this.dismissableMask) {
             this.maskClickListener = this.renderer.listen(this.wrapper, 'mousedown', (event: any) => {
                 if (this.wrapper && this.wrapper.isSameNode(event.target)) {
-                    this.close(event);
+                    setTimeout(() => this.close(event)); // timeout lets 'blur' event listeners be executed
                 }
             });
         }
@@ -948,6 +950,7 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
                 break;
             case 'visible':
                 this.onShow.emit({});
+                this.onShowAnimationEnd.emit(); // TODO ng16 remove and use (onShow)
                 break;
         }
     }
