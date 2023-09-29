@@ -154,7 +154,7 @@ export interface MenuItemCommandEvent {
     /**
      * Browser event.
      */
-    originalEvent?: Event;
+    originalEvent?: /*Event*/ any;
     /**
      * Selected menu item.
      */
