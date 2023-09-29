@@ -1,6 +1,6 @@
 {
-    "name": "primeng",
-    "version": "16.3.1-sdi",
+    "name": "@nfedorov/primeng",
+    "version": "16.3.1",
     "license": "SEE LICENSE IN LICENSE.md",
     "scripts": {
         "ng": "ng",
@@ -21,11 +21,13 @@
         "build:ssr": "ng build --configuration=production && ng run primeng:server",
         "prerender": "ng run primeng:prerender",
         "vercel-build": "npm run build:ssr",
-        "apidoc": "node ./api-generator/build-apidoc.ts"
+        "apidoc": "node ./api-generator/build-apidoc.ts",
+        "postbuild:package": "node postbuild-package.js",
+        "publish:package": "npm run build:package && npm publish ./dist --access public"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/primefaces/primeng.git"
+        "url": "https://github.com/nnfedorov/primeng.git"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^16.2.0",
