@@ -435,26 +435,27 @@ export class Accordion implements BlockableUI, AfterContentInit, OnDestroy {
 
     constructor(public el: ElementRef, public changeDetector: ChangeDetectorRef) {}
 
-    @HostListener('keydown', ['$event'])
-    onKeydown(event) {
-        switch (event.code) {
-            case 'ArrowDown':
-                this.onTabArrowDownKey(event);
-                break;
-
-            case 'ArrowUp':
-                this.onTabArrowUpKey(event);
-                break;
-
-            case 'Home':
-                this.onTabHomeKey(event);
-                break;
-
-            case 'End':
-                this.onTabEndKey(event);
-                break;
-        }
-    }
+    // This listener breaks keyboard navigation of nested input controls. 
+    // @HostListener('keydown', ['$event'])
+    // onKeydown(event) {
+    //     switch (event.code) {
+    //         case 'ArrowDown':
+    //             this.onTabArrowDownKey(event);
+    //             break;
+    //
+    //         case 'ArrowUp':
+    //             this.onTabArrowUpKey(event);
+    //             break;
+    //
+    //         case 'Home':
+    //             this.onTabHomeKey(event);
+    //             break;
+    //
+    //         case 'End':
+    //             this.onTabEndKey(event);
+    //             break;
+    //     }
+    // }
 
     onTabArrowDownKey(event) {
         const nextHeaderAction = this.findNextHeaderAction(event.target.parentElement.parentElement.parentElement);
