@@ -4,11 +4,11 @@
     "license": "SEE LICENSE IN LICENSE.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/nnfedorov/primeng.git",
+        "url": "https://github.com/nfedorov/primeng.git",
         "directory": "packages/primeng"
     },
     "bugs": {
-        "url": "https://github.com/nnfedorov/primeng/issues"
+        "url": "https://github.com/nfedorov/primeng/issues"
     },
     "keywords": [
         "primeng",
