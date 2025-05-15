@@ -540,6 +540,7 @@ export interface DateMeta {
 export class Calendar extends BaseComponent implements OnInit, AfterContentInit, OnDestroy, ControlValueAccessor {
     @Input() externalMonthsCreation?: boolean;
     @Input() onDateSelectFn?: (event: Event, dateMeta: DateMeta) => void;
+    @Input() getDateClassFn?: (dateMeta: DateMeta) => string;
     @Input() target?: HTMLElement;
 
     @Input() iconDisplay: 'input' | 'button' = 'button';
@@ -1245,7 +1246,26 @@ export class Calendar extends BaseComponent implements OnInit, AfterContentInit,
     preventDocumentListener: Nullable<boolean>;
 
     dayClass(date) {
-        return this._componentStyle.classes.day({ instance: this, date: date });
+        const baseClasses = this._componentStyle.classes.day({ instance: this, date: date });
+        
+        let customClasses = {};
+        
+        if (this.getDateClassFn) {
+            const customClassString = this.getDateClassFn(date);
+            customClasses = this.convertStringToClassObject(customClassString);
+        }
+        
+        return {
+            ...baseClasses,
+            ...customClasses,   
+        };
+    }
+
+    private convertStringToClassObject(classes: string): { [key: string]: boolean } {
+        return classes.split(' ').reduce((acc, className) => {
+            if (className.trim()) acc[className.trim()] = true;
+            return acc;
+        }, {});
     }
 
     _disabledDates!: Array<Date>;
