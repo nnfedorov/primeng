@@ -64,6 +64,16 @@ export const DATEPICKER_VALUE_ACCESSOR: any = {
     useExisting: forwardRef(() => DatePicker),
     multi: true
 };
+export interface DateMeta {
+    day: number;
+    month: number;
+    selectable?: boolean;
+    otherMonth?: boolean;
+    today?: boolean;
+    year: number;
+    weekDay?: number;
+    dateHash?: string;
+}
 /**
  * DatePicker is a form component to work with dates.
  * @group Components
@@ -528,6 +538,11 @@ export const DATEPICKER_VALUE_ACCESSOR: any = {
     encapsulation: ViewEncapsulation.None
 })
 export class DatePicker extends BaseComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy, ControlValueAccessor {
+    @Input() externalMonthsCreation?: boolean;
+    @Input() onDateSelectFn?: (event: Event, dateMeta: DateMeta) => void;
+    @Input() getDateClassFn?: (dateMeta: DateMeta) => string;
+    @Input() target?: HTMLElement;
+    
     @Input() iconDisplay: 'input' | 'button' = 'button';
     /**
      * Inline style of the component.
@@ -1162,7 +1177,26 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
     preventDocumentListener: Nullable<boolean>;
 
     dayClass(date) {
-        return this._componentStyle.classes.day({ instance: this, date: date });
+        const baseClasses = this._componentStyle.classes.day({ instance: this, date: date });
+
+        let customClasses = {};
+
+        if (this.getDateClassFn) {
+            const customClassString = this.getDateClassFn(date);
+            customClasses = this.convertStringToClassObject(customClassString);
+        }
+
+        return {
+            ...baseClasses,
+            ...customClasses,
+        };
+    }
+
+    private convertStringToClassObject(classes: string): { [key: string]: boolean } {
+        return classes.split(' ').reduce((acc, className) => {
+            if (className.trim()) acc[className.trim()] = true;
+            return acc;
+        }, {});
     }
 
     /**
@@ -1488,7 +1522,10 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
         return yearPickerValues;
     }
 
-    createMonths(month: number, year: number) {
+    createMonths(month: number, year: number, isExternalCall?: boolean) {
+        if (this.externalMonthsCreation && !isExternalCall) {
+            return;
+        }
         this.months = this.months = [];
         for (let i = 0; i < this.numberOfMonths; i++) {
             let m = month + i;
@@ -1528,6 +1565,7 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
 
         for (let i = 0; i < monthRows; i++) {
             let week = [];
+            let weekDay = 0;
 
             if (i == 0) {
                 for (let j = prevMonthDaysLength - firstDay + 1; j <= prevMonthDaysLength; j++) {
@@ -1538,7 +1576,9 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
                         year: prev.year,
                         otherMonth: true,
                         today: this.isToday(today, j, prev.month, prev.year),
-                        selectable: this.isSelectable(j, prev.month, prev.year, true)
+                        selectable: this.isSelectable(j, prev.month, prev.year, true),
+                        weekDay: weekDay++,
+                        dateHash: `${prev.year}.${prev.month}.${j}`
                     });
                 }
 
@@ -1549,7 +1589,9 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
                         month: month,
                         year: year,
                         today: this.isToday(today, dayNo, month, year),
-                        selectable: this.isSelectable(dayNo, month, year, false)
+                        selectable: this.isSelectable(dayNo, month, year, false),
+                        weekDay: weekDay++,
+                        dateHash: `${year}.${month}.${dayNo}`
                     });
                     dayNo++;
                 }
@@ -1563,7 +1605,9 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
                             year: next.year,
                             otherMonth: true,
                             today: this.isToday(today, dayNo - daysLength, next.month, next.year),
-                            selectable: this.isSelectable(dayNo - daysLength, next.month, next.year, true)
+                            selectable: this.isSelectable(dayNo - daysLength, next.month, next.year, true),
+                            weekDay: weekDay++,
+                            dateHash: `${next.year}.${next.month}.${dayNo - daysLength}`
                         });
                     } else {
                         week.push({
@@ -1571,7 +1615,9 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
                             month: month,
                             year: year,
                             today: this.isToday(today, dayNo, month, year),
-                            selectable: this.isSelectable(dayNo, month, year, false)
+                            selectable: this.isSelectable(dayNo, month, year, false),
+                            weekDay: weekDay++,
+                            dateHash: `${year}.${month}.${dayNo}`
                         });
                     }
 
@@ -1711,6 +1757,12 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
     onDateSelect(event: Event, dateMeta: any) {
         if (this.disabled || !dateMeta.selectable) {
             event.preventDefault();
+            return;
+        }
+
+        if (this.onDateSelectFn) {
+            // custom select handler
+            this.onDateSelectFn(event, dateMeta);
             return;
         }
 
@@ -3289,9 +3341,9 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
                         this.overlay.style.width = getOuterWidth(this.inputfieldViewChild?.nativeElement) + 'px';
                     }
                 }
-                absolutePosition(this.overlay, this.inputfieldViewChild?.nativeElement);
+                absolutePosition(this.overlay,  this.target || this.inputfieldViewChild?.nativeElement);
             } else {
-                relativePosition(this.overlay, this.inputfieldViewChild?.nativeElement);
+                relativePosition(this.overlay,  this.target || this.inputfieldViewChild?.nativeElement);
             }
         }
     }
