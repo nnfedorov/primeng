@@ -1177,26 +1177,26 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
     preventDocumentListener: Nullable<boolean>;
 
     dayClass(date) {
-        const baseClasses = this._componentStyle.classes.day({ instance: this, date: date });
-
-        let customClasses = {};
-
-        if (this.getDateClassFn) {
-            const customClassString = this.getDateClassFn(date);
-            customClasses = this.convertStringToClassObject(customClassString);
-        }
-
+        const baseClasses = this._componentStyle.classes.day({ instance: this, date });
+        
+        const customClasses = this.getDateClassFn?.(date) || '';
+    
+        const customClassesObj = this.normalizeToObject(customClasses);
+        
         return {
             ...baseClasses,
-            ...customClasses,
+            ...customClassesObj
         };
     }
 
-    private convertStringToClassObject(classes: string): { [key: string]: boolean } {
-        return classes.split(' ').reduce((acc, className) => {
-            if (className.trim()) acc[className.trim()] = true;
-            return acc;
-        }, {});
+    private normalizeToObject(classValue: string | { [key: string]: boolean }): { [key: string]: boolean } {
+        if (typeof classValue === 'string') {
+            return classValue.split(' ').reduce((acc, cls) => {
+                if (cls.trim()) acc[cls.trim()] = true;
+                return acc;
+            }, {});
+        }
+        return classValue || {};
     }
 
     /**
