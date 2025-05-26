@@ -542,7 +542,7 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
     @Input() onDateSelectFn?: (event: Event, dateMeta: DateMeta) => void;
     @Input() getDateClassFn?: (dateMeta: DateMeta) => string;
     @Input() target?: HTMLElement;
-    
+
     @Input() iconDisplay: 'input' | 'button' = 'button';
     /**
      * Inline style of the component.
@@ -1178,11 +1178,11 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
 
     dayClass(date) {
         const baseClasses = this._componentStyle.classes.day({ instance: this, date });
-        
+
         const customClasses = this.getDateClassFn?.(date) || '';
-    
+
         const customClassesObj = this.normalizeToObject(customClasses);
-        
+
         return {
             ...baseClasses,
             ...customClassesObj
@@ -3341,9 +3341,9 @@ export class DatePicker extends BaseComponent implements OnInit, AfterContentIni
                         this.overlay.style.width = getOuterWidth(this.inputfieldViewChild?.nativeElement) + 'px';
                     }
                 }
-                absolutePosition(this.overlay,  this.target || this.inputfieldViewChild?.nativeElement);
+                absolutePosition(this.overlay, this.target || this.inputfieldViewChild?.nativeElement);
             } else {
-                relativePosition(this.overlay,  this.target || this.inputfieldViewChild?.nativeElement);
+                relativePosition(this.overlay, this.target || this.inputfieldViewChild?.nativeElement);
             }
         }
     }

@@ -1247,17 +1247,17 @@ export class Calendar extends BaseComponent implements OnInit, AfterContentInit,
 
     dayClass(date) {
         const baseClasses = this._componentStyle.classes.day({ instance: this, date: date });
-        
+
         let customClasses = {};
-        
+
         if (this.getDateClassFn) {
             const customClassString = this.getDateClassFn(date);
             customClasses = this.convertStringToClassObject(customClassString);
         }
-        
+
         return {
             ...baseClasses,
-            ...customClasses,   
+            ...customClasses
         };
     }
 
