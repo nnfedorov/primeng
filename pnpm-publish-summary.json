@@ -1,0 +1,12 @@
+{
+	"publishedPackages": [
+		{
+			"name": "@nfedorov/primeng",
+			"version": "19.1.2"
+		},
+		{
+			"name": "@nfedorov/primeng/themes",
+			"version": "19.1.2"
+		}
+	]
+}

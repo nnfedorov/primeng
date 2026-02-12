@@ -1,0 +1,62 @@
+{
+    "name": "primeng",
+    "version": "19.1.2",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nfedorov/primeng.git",
+        "directory": "packages/primeng"
+    },
+    "bugs": {
+        "url": "https://github.com/nfedorov/primeng/issues"
+    },
+    "keywords": [
+        "primeng",
+        "angular",
+        "ui library",
+        "component library",
+        "material",
+        "bootstrap",
+        "fluent",
+        "tailwind"
+    ],
+    "publishConfig": {
+        "directory": "dist",
+        "linkDirectory": false,
+        "access": "public"
+    },
+    "scripts": {
+        "build": "cross-env NODE_ENV=production INPUT_DIR=src/ OUTPUT_DIR=dist/ pnpm run build:package",
+        "build:package": "pnpm run build:prebuild && ng build primeng && pnpm run build:postbuild",
+        "build:prebuild": "node ./scripts/prebuild.mjs",
+        "build:postbuild": "node ./scripts/postbuild.mjs",
+        "dev:link": "pnpm link --global && npm link",
+        "pack:lib": "pnpm pack && node scripts/rename-pack.js",
+        "lint": "ng lint",
+        "test:unit": "ng test primeng --watch=false",
+        "test:unit:watch": "ng test primeng",
+        "test:unit:coverage": "ng test primeng --coverage"
+    },
+    "devDependencies": {
+        "karma": "~6.4.2",
+        "karma-chrome-launcher": "~3.2.0",
+        "karma-coverage": "~2.2.0",
+        "karma-jasmine": "~5.1.0",
+        "karma-jasmine-html-reporter": "~2.1.0",
+        "tslib": "^2.5.0"
+    },
+    "peerDependencies": {
+        "@angular/animations": "^19.0.0",
+        "@angular/cdk": "^19.0.0",
+        "@angular/common": "^19.0.0",
+        "@angular/core": "^19.0.0",
+        "@angular/forms": "^19.0.0",
+        "@angular/router": "^19.0.0",
+        "@angular/platform-browser": "^19.0.0",
+        "rxjs": "^6.0.0 || ^7.8.1"
+    },
+    "dependencies": {
+        "@primeuix/styled": "catalog:",
+        "@primeuix/utils": "catalog:"
+    }
+}
